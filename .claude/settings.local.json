@@ -7,7 +7,8 @@
       "Bash(node:*)",
       "Bash(npx next:*)",
       "Edit",
-      "Write"
+      "Write",
+      "Bash(ls /c/Users/jogdi/Desktop/.postcssrc* /c/Users/jogdi/Desktop/postcss.config* /c/Users/jogdi/Desktop/.next)"
     ]
   }
 }
