@@ -1,0 +1,187 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  image_url: string;
+  stock: number;
+  category: string;
+  sku: string;
+  featured: number;
+}
+
+export default function ProductDetailPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/products/${id}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Not found");
+        return r.json();
+      })
+      .then(setProduct)
+      .catch(() => router.push("/"))
+      .finally(() => setLoading(false));
+  }, [id, router]);
+
+  async function handleBuy() {
+    if (!product) return;
+    setPurchasing(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Failed to start checkout");
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setPurchasing(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-12">
+        <div className="animate-pulse space-y-6">
+          <div className="h-4 w-48 rounded bg-card-bg" />
+          <div className="h-8 w-96 rounded bg-card-bg" />
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="aspect-square rounded-xl bg-card-bg" />
+            <div className="space-y-4">
+              <div className="h-6 w-32 rounded bg-card-bg" />
+              <div className="h-20 rounded bg-card-bg" />
+              <div className="h-10 w-40 rounded bg-card-bg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) return null;
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      {/* Breadcrumb */}
+      <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
+        <Link href="/" className="transition-colors hover:text-accent">Shop</Link>
+        <span>/</span>
+        <span className="text-foreground">{product.title}</span>
+      </nav>
+
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Image */}
+        <div className="relative aspect-square overflow-hidden rounded-xl border border-card-border bg-card-bg">
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted">
+              <svg width="80" height="80" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
+                <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        {/* Details */}
+        <div className="flex flex-col gap-5">
+          <div>
+            <span className="mb-2 inline-block rounded-full bg-accent-light px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent">
+              {product.category}
+            </span>
+            <h1 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">{product.title}</h1>
+          </div>
+
+          {product.sku && (
+            <div className="flex items-center gap-2 text-sm text-muted">
+              <span className="rounded bg-card-bg px-2 py-0.5 font-mono text-xs">
+                SKU: {product.sku}
+              </span>
+            </div>
+          )}
+
+          <div className="rounded-xl border border-card-border bg-card-bg p-5">
+            <div className="mb-3 flex items-end gap-2">
+              <span className="text-3xl font-bold text-accent">${product.price.toFixed(2)}</span>
+              <span className="text-sm text-muted">USD</span>
+            </div>
+            <div className="mb-4 flex items-center gap-2">
+              {product.stock > 0 ? (
+                <>
+                  <span className="inline-block h-2 w-2 rounded-full bg-success" />
+                  <span className="text-sm text-success">{product.stock} in stock</span>
+                </>
+              ) : (
+                <>
+                  <span className="inline-block h-2 w-2 rounded-full bg-danger" />
+                  <span className="text-sm text-danger">Out of stock</span>
+                </>
+              )}
+            </div>
+            <button
+              onClick={handleBuy}
+              disabled={product.stock <= 0 || purchasing}
+              className="w-full rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {purchasing ? "Processing..." : product.stock <= 0 ? "Sold Out" : "Buy Now"}
+            </button>
+          </div>
+
+          {product.description && (
+            <div>
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted">Description</h2>
+              <div className="whitespace-pre-wrap rounded-xl border border-card-border bg-card-bg p-5 text-sm leading-relaxed text-foreground/80">
+                {product.description}
+              </div>
+            </div>
+          )}
+
+          {/* How it works */}
+          <div className="rounded-xl border border-card-border bg-gradient-to-br from-accent/5 to-card-bg p-5">
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted">How It Works</h2>
+            <ol className="space-y-2 text-sm text-muted">
+              <li className="flex gap-3">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-bold text-accent">1</span>
+                Click Buy Now and complete payment via Stripe
+              </li>
+              <li className="flex gap-3">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-bold text-accent">2</span>
+                Account details sent to your email
+              </li>
+              <li className="flex gap-3">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-bold text-accent">3</span>
+                Log in and enjoy your new account
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

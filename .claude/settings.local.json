@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(mkdir -p /c/Users/jogdi/Desktop/bestaccounts/src/lib)",
+      "Bash(mkdir -p /c/Users/jogdi/Desktop/bestaccounts/public/uploads)",
+      "Bash(node:*)",
+      "Bash(npx next:*)",
+      "Edit",
+      "Write"
+    ]
+  }
+}

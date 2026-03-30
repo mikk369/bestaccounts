@@ -24,6 +24,12 @@
 .DS_Store
 *.pem
 
+# database
+/data/
+
+# uploads
+/public/uploads/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
