@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
+
 import Link from "next/link";
 
 interface Product {
@@ -92,13 +92,10 @@ export default function ProductDetailPage() {
         {/* Image */}
         <div className="relative aspect-square overflow-hidden rounded-xl border border-card-border bg-card-bg">
           {product.image_url ? (
-            <Image
+            <img
               src={product.image_url}
               alt={product.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
+              className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted">

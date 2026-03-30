@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+
 
 interface Product {
   id: string;
@@ -268,7 +268,7 @@ export default function AdminDashboardPage() {
                 />
                 {imagePreview && (
                   <div className="relative mt-2 h-32 w-32 overflow-hidden rounded-lg border border-card-border">
-                    <Image src={imagePreview} alt="Preview" fill className="object-cover" sizes="128px" />
+                    <img src={imagePreview} alt="Preview" className="absolute inset-0 h-full w-full object-cover" />
                   </div>
                 )}
               </div>
@@ -341,7 +341,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-3">
                       <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-card-border bg-input-bg">
                         {product.image_url ? (
-                          <Image src={product.image_url} alt="" fill className="object-cover" sizes="40px" />
+                          <img src={product.image_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
                         ) : (
                           <div className="flex h-full items-center justify-center text-xs text-muted">N/A</div>
                         )}

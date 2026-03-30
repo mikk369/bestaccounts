@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2026-03-30
+
+### Fixed
+- Product images not displaying in production — replaced `next/image` `<Image>` with native `<img>` tags across ProductCard, product detail page, and admin dashboard
+- Added dynamic `/uploads/[...path]` route handler to serve uploaded images at runtime (Next.js production server does not serve files added to `public/` after build time)
+
 ## [1.0.0] - 2026-03-30
 
 ### Added

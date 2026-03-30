@@ -1,6 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
-
 interface Product {
   id: string;
   title: string;
@@ -19,12 +17,10 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <div className="relative aspect-square overflow-hidden bg-input-bg">
         {product.image_url ? (
-          <Image
+          <img
             src={product.image_url}
             alt={product.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-muted">

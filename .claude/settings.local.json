@@ -8,7 +8,9 @@
       "Bash(npx next:*)",
       "Edit",
       "Write",
-      "Bash(ls /c/Users/jogdi/Desktop/.postcssrc* /c/Users/jogdi/Desktop/postcss.config* /c/Users/jogdi/Desktop/.next)"
+      "Bash(ls /c/Users/jogdi/Desktop/.postcssrc* /c/Users/jogdi/Desktop/postcss.config* /c/Users/jogdi/Desktop/.next)",
+      "Bash(find /c/Users/jogdi/Desktop/bestaccounts -maxdepth 2 -name Dockerfile* -o -name pm2* -o -name .dockerignore -o -name docker-compose*)",
+      "Bash(npm run:*)"
     ]
   }
 }
