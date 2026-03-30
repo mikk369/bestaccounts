@@ -15,12 +15,12 @@ export default function ProductCard({ product }: { product: Product }) {
       href={`/product/${product.id}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-card-border bg-card-bg transition-all hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5"
     >
-      <div className="relative aspect-square overflow-hidden bg-input-bg">
+      <div className="relative aspect-video overflow-hidden bg-input-bg">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.title}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-muted">

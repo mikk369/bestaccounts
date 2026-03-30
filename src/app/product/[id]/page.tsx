@@ -90,12 +90,12 @@ export default function ProductDetailPage() {
 
       <div className="grid gap-8 md:grid-cols-2">
         {/* Image */}
-        <div className="relative aspect-square overflow-hidden rounded-xl border border-card-border bg-card-bg">
+        <div className="relative aspect-video overflow-hidden rounded-xl border border-card-border bg-card-bg">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.title}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-contain"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted">
