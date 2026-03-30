@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0] - 2026-03-30
+
+### Added
+- SEO: Server-side rendered homepage — products are now in the initial HTML for Google to crawl
+- SEO: Server-side rendered product detail pages with dynamic `<title>`, `<meta description>`, and Open Graph tags via `generateMetadata`
+- SEO: JSON-LD structured data (Product schema) on every product page with name, price, image, and availability
+- SEO: Dynamic `/sitemap.xml` listing homepage and all product pages
+- SEO: `/robots.txt` allowing crawlers, blocking `/admin/` and `/api/`
+- SEO: Keywords, Open Graph, and Twitter card metadata in root layout
+- `BuyButton` client component extracted from product detail page
+- `ShopFilters` client component extracted from homepage (handles search, category, price, sort)
+
+### Changed
+- Homepage (`/`) converted from client component to server component — initial products fetched server-side, filters remain interactive
+- Product detail page (`/product/[id]`) converted from client component to server component with `notFound()` handling
+- Product card and detail image aspect ratio changed from `aspect-square` to `aspect-video` with `object-contain` to show full stats images without cropping
+
 ## [1.0.1] - 2026-03-30
 
 ### Fixed

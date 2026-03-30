@@ -1,9 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-
+import { getDb } from "@/lib/db";
+import { notFound } from "next/navigation";
 import Link from "next/link";
+import BuyButton from "@/components/BuyButton";
+import type { Metadata } from "next";
 
 interface Product {
   id: string;
@@ -17,70 +16,68 @@ interface Product {
   featured: number;
 }
 
-export default function ProductDetailPage() {
-  const { id } = useParams();
-  const router = useRouter();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [purchasing, setPurchasing] = useState(false);
+type Props = { params: Promise<{ id: string }> };
 
-  useEffect(() => {
-    if (!id) return;
-    fetch(`/api/products/${id}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Not found");
-        return r.json();
-      })
-      .then(setProduct)
-      .catch(() => router.push("/"))
-      .finally(() => setLoading(false));
-  }, [id, router]);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const db = getDb();
+  const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id) as Product | undefined;
 
-  async function handleBuy() {
-    if (!product) return;
-    setPurchasing(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error || "Failed to start checkout");
-      }
-    } catch {
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setPurchasing(false);
-    }
+  if (!product) {
+    return { title: "Product Not Found" };
   }
 
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-5xl px-4 py-12">
-        <div className="animate-pulse space-y-6">
-          <div className="h-4 w-48 rounded bg-card-bg" />
-          <div className="h-8 w-96 rounded bg-card-bg" />
-          <div className="grid gap-8 md:grid-cols-2">
-            <div className="aspect-square rounded-xl bg-card-bg" />
-            <div className="space-y-4">
-              <div className="h-6 w-32 rounded bg-card-bg" />
-              <div className="h-20 rounded bg-card-bg" />
-              <div className="h-10 w-40 rounded bg-card-bg" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://webcodes.ee";
+
+  return {
+    title: `${product.title} — BestAccounts`,
+    description: product.description || `Buy ${product.title} for $${product.price.toFixed(2)}. Verified gaming account with instant delivery.`,
+    openGraph: {
+      title: product.title,
+      description: product.description || `Buy ${product.title} for $${product.price.toFixed(2)}.`,
+      url: `${baseUrl}/product/${product.id}`,
+      images: product.image_url
+        ? [{ url: `${baseUrl}${product.image_url}`, alt: product.title }]
+        : undefined,
+    },
+  };
+}
+
+export default async function ProductDetailPage({ params }: Props) {
+  const { id } = await params;
+  const db = getDb();
+  const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id) as Product | undefined;
+
+  if (!product) {
+    notFound();
   }
 
-  if (!product) return null;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://webcodes.ee";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    description: product.description || undefined,
+    image: product.image_url ? `${baseUrl}${product.image_url}` : undefined,
+    sku: product.sku || undefined,
+    offers: {
+      "@type": "Offer",
+      price: product.price.toFixed(2),
+      priceCurrency: "USD",
+      availability: product.stock > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+    },
+  };
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
         <Link href="/" className="transition-colors hover:text-accent">Shop</Link>
@@ -141,13 +138,7 @@ export default function ProductDetailPage() {
                 </>
               )}
             </div>
-            <button
-              onClick={handleBuy}
-              disabled={product.stock <= 0 || purchasing}
-              className="w-full rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {purchasing ? "Processing..." : product.stock <= 0 ? "Sold Out" : "Buy Now"}
-            </button>
+            <BuyButton productId={product.id} stock={product.stock} />
           </div>
 
           {product.description && (

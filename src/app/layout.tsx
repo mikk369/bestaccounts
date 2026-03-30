@@ -14,8 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://webcodes.ee"),
   title: "BestAccounts — Premium Gaming Accounts",
   description: "Buy premium gaming accounts securely. Fast delivery, verified accounts.",
+  keywords: ["gaming accounts", "buy game accounts", "premium accounts", "verified gaming accounts", "game account shop", "OSRS accounts", "Runescape accounts"],
+  openGraph: {
+    title: "BestAccounts — Premium Gaming Accounts",
+    description: "Buy premium gaming accounts securely. Fast delivery, verified accounts.",
+    url: "/",
+    siteName: "BestAccounts",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

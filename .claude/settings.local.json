@@ -10,7 +10,8 @@
       "Write",
       "Bash(ls /c/Users/jogdi/Desktop/.postcssrc* /c/Users/jogdi/Desktop/postcss.config* /c/Users/jogdi/Desktop/.next)",
       "Bash(find /c/Users/jogdi/Desktop/bestaccounts -maxdepth 2 -name Dockerfile* -o -name pm2* -o -name .dockerignore -o -name docker-compose*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(find C:/Users/jogdi/Desktop/bestaccounts/node_modules/next/dist/docs -type f -name *.md -o -name *.txt)"
     ]
   }
 }
